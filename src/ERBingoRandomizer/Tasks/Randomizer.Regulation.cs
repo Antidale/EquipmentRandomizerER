@@ -1,17 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Diagnostics;
+using System.Drawing.Printing;
 using System.IO;
+using System.IO.MemoryMappedFiles;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.Windows.Controls.Primitives;
 using FSParam;
 using Project.Params;
 using Project.Settings;
 using Project.Utility;
 using SoulsFormats;
 using static FSParam.Param;
+using static SoulsFormats.PARAM;
 
 namespace Project.Tasks;
 
@@ -33,9 +38,10 @@ public partial class Randomizer
     private Dictionary<int, string> _weaponNameDictionary;
     private Dictionary<int, EquipParamGoods> _goodsDictionary;
     private Dictionary<int, Magic> _magicDictionary;
-    private Dictionary<ushort, List<Row>> _weaponTypeDictionary;
-    private Dictionary<byte, List<Row>> _armorTypeDictionary;
-    private Dictionary<byte, List<Row>> _magicTypeDictionary;
+    private Dictionary<ushort, List<Param.Row>> _weaponTypeDictionary;
+    private Dictionary<byte, List<Param.Row>> _armorTypeDictionary;
+    private Dictionary<byte, List<Param.Row>> _magicTypeDictionary;
+    private Dictionary<int, WorldMapPieceParam> _worldMapPieceParamDictionary;
     public Task RandomizeRegulation()
     {
         _randomizerLog = new List<string>();
@@ -59,6 +65,7 @@ public partial class Randomizer
         //todo: alter Kale's shop to have a Marik's rune in place of a note
         UpdateKalesShop();
 
+        RevealWorldMap();
         writeFiles();
         writeLog();
         SeedInfo = new SeedInfo(_seed, Util.GetShaRegulation256Hash());
@@ -73,24 +80,24 @@ public partial class Randomizer
         logItem($"Seed: {_seed}");
         logItem("Level estimate (x) appears if you cannot wield the weapon, assumes you are benefiting from two-handing.");
 
-        List<Row> staves = _weaponTypeDictionary[Const.StaffType];
-        List<Row> seals = _weaponTypeDictionary[Const.SealType];
+        List<Param.Row> staves = _weaponTypeDictionary[Const.StaffType];
+        List<Param.Row> seals = _weaponTypeDictionary[Const.SealType];
 
-        List<Row> bows = _weaponTypeDictionary[Const.BowType];
-        List<Row> lightbows = _weaponTypeDictionary[Const.LightBowType];
-        List<Row> greatbows = _weaponTypeDictionary[Const.GreatbowType];
-        List<Row> ballistae = _weaponTypeDictionary[Const.BallistaType];
-        List<Row> crossbows = _weaponTypeDictionary[Const.CrossbowType];
-        List<Row> smallShields = _weaponTypeDictionary[Const.SmallShieldType];
-        List<Row> mediumShields = _weaponTypeDictionary[Const.MediumShieldType];
-        List<Row> greatShields = _weaponTypeDictionary[Const.GreatShieldType];
-        List<Row> spears = _weaponTypeDictionary[Const.SpearType];
-        List<Row> greatSpears = _weaponTypeDictionary[Const.GreatSpearType];
-        List<Row> claws = _weaponTypeDictionary[Const.ClawType];
-        List<Row> daggers = _weaponTypeDictionary[Const.DaggerType];
-        List<Row> fists = _weaponTypeDictionary[Const.FistType];
-        List<Row> colossalWeapons = _weaponTypeDictionary[Const.ColossalWeaponType];
-        List<Row> colossalSwords = _weaponTypeDictionary[Const.ColossalSwordType];
+        List<Param.Row> bows = _weaponTypeDictionary[Const.BowType];
+        List<Param.Row> lightbows = _weaponTypeDictionary[Const.LightBowType];
+        List<Param.Row> greatbows = _weaponTypeDictionary[Const.GreatbowType];
+        List<Param.Row> ballistae = _weaponTypeDictionary[Const.BallistaType];
+        List<Param.Row> crossbows = _weaponTypeDictionary[Const.CrossbowType];
+        List<Param.Row> smallShields = _weaponTypeDictionary[Const.SmallShieldType];
+        List<Param.Row> mediumShields = _weaponTypeDictionary[Const.MediumShieldType];
+        List<Param.Row> greatShields = _weaponTypeDictionary[Const.GreatShieldType];
+        List<Param.Row> spears = _weaponTypeDictionary[Const.SpearType];
+        List<Param.Row> greatSpears = _weaponTypeDictionary[Const.GreatSpearType];
+        List<Param.Row> claws = _weaponTypeDictionary[Const.ClawType];
+        List<Param.Row> daggers = _weaponTypeDictionary[Const.DaggerType];
+        List<Param.Row> fists = _weaponTypeDictionary[Const.FistType];
+        List<Param.Row> colossalWeapons = _weaponTypeDictionary[Const.ColossalWeaponType];
+        List<Param.Row> colossalSwords = _weaponTypeDictionary[Const.ColossalSwordType];
 
         IEnumerable<int> remembranceItems = _shopLineupParam.Rows.Where(r => r.ID is >= 101895 and <= 101948) // sword lance to Light of Miquella
             .Select(r => new ShopLineupParam(r).equipId);
@@ -115,18 +122,18 @@ public partial class Randomizer
                 && remembranceItems.All(i => i != id))
             .ToList();
 
-        List<Row> greatswords = _weaponTypeDictionary[Const.GreatswordType];
-        List<Row> curvedGreatswords = _weaponTypeDictionary[Const.CurvedGreatswordType];
-        List<Row> katanas = _weaponTypeDictionary[Const.KatanaType];
-        List<Row> twinblades = _weaponTypeDictionary[Const.TwinbladeType];
-        List<Row> heavyThrusting = _weaponTypeDictionary[Const.HeavyThrustingType];
-        List<Row> axes = _weaponTypeDictionary[Const.AxeType];
-        List<Row> greataxes = _weaponTypeDictionary[Const.GreataxeType];
-        List<Row> hammers = _weaponTypeDictionary[Const.HammerType];
-        List<Row> greatHammers = _weaponTypeDictionary[Const.GreatHammerType];
-        List<Row> halberds = _weaponTypeDictionary[Const.HalberdType];
-        List<Row> reapers = _weaponTypeDictionary[Const.ReaperType];
-        List<Row> greatKatanas = _weaponTypeDictionary[Const.GreatKatanaType];
+        List<Param.Row> greatswords = _weaponTypeDictionary[Const.GreatswordType];
+        List<Param.Row> curvedGreatswords = _weaponTypeDictionary[Const.CurvedGreatswordType];
+        List<Param.Row> katanas = _weaponTypeDictionary[Const.KatanaType];
+        List<Param.Row> twinblades = _weaponTypeDictionary[Const.TwinbladeType];
+        List<Param.Row> heavyThrusting = _weaponTypeDictionary[Const.HeavyThrustingType];
+        List<Param.Row> axes = _weaponTypeDictionary[Const.AxeType];
+        List<Param.Row> greataxes = _weaponTypeDictionary[Const.GreataxeType];
+        List<Param.Row> hammers = _weaponTypeDictionary[Const.HammerType];
+        List<Param.Row> greatHammers = _weaponTypeDictionary[Const.GreatHammerType];
+        List<Param.Row> halberds = _weaponTypeDictionary[Const.HalberdType];
+        List<Param.Row> reapers = _weaponTypeDictionary[Const.ReaperType];
+        List<Param.Row> greatKatanas = _weaponTypeDictionary[Const.GreatKatanaType];
 
         List<int> sideArms = _weaponDictionary.Keys.Select(washWeaponMetadata).Distinct()
             .Where(id => staves.All(s => s.ID != id) && seals.All(s => s.ID != id)
@@ -173,11 +180,11 @@ public partial class Randomizer
         OrderedDictionary guaranteedDictionary = new();
         // OrderedDictionary guaranteedArmor = new();
 
-        IEnumerable<Row> itemLotParamMap = _itemLotParam_map.Rows.Where(id => !Unk.unkItemLotParamMapWeapons.Contains(id.ID));
-        IEnumerable<Row> itemLotParamEnemy = _itemLotParam_enemy.Rows.Where(id => !Unk.unkItemLotParamEnemyWeapons.Contains(id.ID));
-        IEnumerable<Row> rowList = itemLotParamEnemy.Concat(itemLotParamMap);
+        IEnumerable<Param.Row> itemLotParamMap = _itemLotParam_map.Rows.Where(id => !Unk.unkItemLotParamMapWeapons.Contains(id.ID));
+        IEnumerable<Param.Row> itemLotParamEnemy = _itemLotParam_enemy.Rows.Where(id => !Unk.unkItemLotParamEnemyWeapons.Contains(id.ID));
+        IEnumerable<Param.Row> rowList = itemLotParamEnemy.Concat(itemLotParamMap);
 
-        foreach (Row row in rowList)
+        foreach (Param.Row row in rowList)
         {
             Column[] itemIds = row.Cells.Take(Const.ItemLots).ToArray();
             Column[] categories = row.Cells.Skip(Const.CategoriesStart).Take(Const.ItemLots).ToArray();
@@ -238,7 +245,7 @@ public partial class Randomizer
         logReplacementDictionary(chanceReplacements);
         logItem("");
 
-        foreach (Row row in rowList)
+        foreach (Param.Row row in rowList)
         {
             Column[] itemIds = row.Cells.Take(Const.ItemLots).ToArray();
             Column[] categories = row.Cells.Skip(Const.CategoriesStart).Take(Const.ItemLots).ToArray();
@@ -415,7 +422,7 @@ public partial class Randomizer
             }
         }
 
-        foreach (Row row in _itemLotParam_enemy.Rows.Concat(_itemLotParam_map.Rows))
+        foreach (Param.Row row in _itemLotParam_enemy.Rows.Concat(_itemLotParam_map.Rows))
         {
             Column[] itemIds = row.Cells.Take(Const.ItemLots).ToArray();
             Column[] categories = row.Cells.Skip(Const.CategoriesStart).Take(Const.ItemLots).ToArray();
@@ -475,7 +482,7 @@ public partial class Randomizer
             960300, 1500300,
         };
 
-        foreach (Row row in _shopLineupParam.Rows)
+        foreach (Param.Row row in _shopLineupParam.Rows)
         {
             if ((byte)row["equipType"]!.Value.Value == Const.ShopLineupArmorCategory)
             {
@@ -508,8 +515,8 @@ public partial class Randomizer
     }
     private void patchAtkParam()
     {
-        Row swarmOfFlies1 = _atkParam_Pc[72100] ?? throw new InvalidOperationException("Entry 72100 not found in AtkParam_Pc");
-        Row swarmOfFlies2 = _atkParam_Pc[72101] ?? throw new InvalidOperationException("Entry 72101 not found in AtkParam_Pc");
+        Param.Row swarmOfFlies1 = _atkParam_Pc[72100] ?? throw new InvalidOperationException("Entry 72100 not found in AtkParam_Pc");
+        Param.Row swarmOfFlies2 = _atkParam_Pc[72101] ?? throw new InvalidOperationException("Entry 72101 not found in AtkParam_Pc");
 
         AtkParam swarmAtkParam1 = new(swarmOfFlies1);
         AtkParam swarmAtkParam2 = new(swarmOfFlies2);
@@ -519,7 +526,7 @@ public partial class Randomizer
 
     private void PatchSmithingStones()
     {
-        foreach (Row row in _equipMtrlSetParam.Rows)
+        foreach (Param.Row row in _equipMtrlSetParam.Rows)
         {
             int numberRequired = (sbyte)row["itemNum01"]!.Value.Value;
             int category = (byte)row["materialCate01"]!.Value.Value;
@@ -540,4 +547,51 @@ public partial class Randomizer
 
         physickNote.Cells.ElementAt(0).SetValue(physickNote, 2002960);
     }
+
+    private void RevealWorldMap()
+    {
+        // Gives all map fragments
+        IEnumerable<Param.Row> allMaps = _worldMapPieceParam.Rows;
+        allMaps = allMaps.ToList();
+
+        foreach (Param.Row row in allMaps)
+        {
+            Param.Column[] mapFields = row.Cells.Take(4).ToArray();
+            mapFields.Last().SetValue(row, (uint)6001);
+        }
+
+        // Removes the map items from the world at the map locations
+        List<int> mapFragmentOnMapIDs = new List<int>() { 12010000, 12010010, 12020060, 12030000, 12050000, 1034480200, 1036540500, 1037440210, 1038410200, 1040520500, 1042370200, 1042510500, 1044320000, 1045370020, 1048560700, 1049370500, 1049400500, 1049530700, 1052540700 };
+
+        IEnumerable<Param.Row> allMapFragmentsOnMapIDs = _itemLotParam_map.Rows.Where(id => mapFragmentOnMapIDs.Contains(id.ID));
+        allMapFragmentsOnMapIDs = allMapFragmentsOnMapIDs.ToList();
+
+        foreach (Param.Row row in allMapFragmentsOnMapIDs)
+        {
+            Param.Column[] chance = row.Cells.Skip(Const.ChanceStart).Take(Const.ItemLots).ToArray();
+            chance[0].SetValue(row, (ushort)0);
+        }
+
+        // Gives the option to change levels of elevations
+        IEnumerable<Param.Row> undergroundMapFlag = _menuCommonParam.Rows.Where(id => id.ID == 0);
+        undergroundMapFlag = undergroundMapFlag.ToList();
+
+        Param.Column[] canShowUndergroundMap = undergroundMapFlag.First().Cells.Skip(22).Take(1).ToArray();
+        canShowUndergroundMap.First().SetValue(undergroundMapFlag.First(), (uint)6001);
+    }
+
+    private void AddMapIconsForWorldMap()
+    {
+        List<int> mapIcons = new List<int>() { 100000, 110000, 111000, 130000, 140000, 150000, 150001, 160000, 180000, 180001, 200000, 200001, 200100, 200101, 210000, 210101, 220000, 220001, 280000, 300000, 300100, 300200, 300300, 300400, 300500, 300600, 300700, 300800, 300900, 301000, 301100, 301200, 301200, 301300, 301400, 301500, 301600, 301700, 301800, 301900, 302000, 310000, 310100, 310200, 310300, 310400, 310500, 310600, 310700, 310900, 311000, 311100, 311200, 311500, 311700, 311800, 311900, 312000, 312100, 312200, 320000, 320100, 320200, 320400, 320500, 320700, 320800, 321100, 341000, 341100, 341101, 341200, 341201, 341300, 341400, 341500, 350000, 392000, 400000, 400100, 400200, 410000, 410100, 410200, 420000, 420100, 420200, 420300, 430000, 430100, 450000, 450100, 450200, 61413200, 61413300, 61413301, 61413500, 61413800, 61423200, 61423300, 61423400, 61423600, 61423700, 61423701, 61423702, 61423800, 61433100, 61433301, 61433400, 61433401, 61433600, 61443300, 61443302, 61443400, 61443401, 61443500, 61443600, 61443800, 61453300, 61453600, 61453700, 61453701, 61453702, 61453900, 61463600, 61463800, 62334000, 62334200, 62334300, 62334400, 62334500, 62334700, 62344100, 62344200, 62344300, 62344400, 62344800, 62345000, 62345001, 62345002, 62345100, 62354100, 62354200, 62354201, 62354400, 62354700, 62355000, 62364100, 62364300, 62364900, 62365000, 62374200, 62374400, 62374600, 62374900, 62384100, 62384200, 62384500, 62384600, 62384700, 62384800, 62384801, 62384900, 62393900, 62394100, 62394400, 62394800, 63355400, 63365100, 63365200, 63365203, 63375100, 63375200, 63375400, 63385000, 63385100, 63385200, 63385400, 63395000, 63395200, 63395300, 63395400, 63405200, 63405300, 63405500, 63415300, 63415301, 63415400, 63415500, 63415501, 63425400, 63435000, 63435300, 63445300, 64464000, 64464001, 64473800, 64473801, 64474000, 64474001, 64474002, 64483600, 64483800, 64484100, 64493800, 64493801, 64493900, 64494000, 64503800, 64503900, 64503901, 64513600, 64513700, 64513900, 64514000, 64514300, 64524100, 65475500, 65475800, 65485700, 65495300, 65495301, 65505600, 65505601, 65505602, 65515300, 65515600, 65515700, 65525500, 65525600, 65525700, 65535600, 65545300, 65545500, 66120100, 66120102, 66120103, 66120104, 66120200, 66120201, 66120202, 66120203, 66120500, 66120700, 68454100, 68454200, 68463800, 68464000, 68464001, 68464100, 68464200, 68464201, 68464300, 68464301, 68464400, 68474400, 68474401, 68483700, 68483800, 68484100, 68484101, 68484300, 68493900, 68494200, 68503800, 68504000, 68534100, 69464500, 69464501, 69464700, 69474500, 69474600, 69484500, 69494300, 69494301, 69494400, 69494500, 69494901, 69494902, 69504400, 69504401, 69504402, 69504600, 69504800, 69514400, 69514500, 69514501, 69514600, 69514601, 69514700, 69534600 };
+
+        // IEnumerable<Param.Row> worldMapPointParamIcons = _worldMapPointParam.Rows.Where(id => mapIcons.Contains(id.ID));
+        // worldMapPointParamIcons = worldMapPointParamIcons.ToList();
+
+        // foreach (Param.Row row in worldMapPointParamIcons)
+        // {
+        //     Param.Column[] mapFields = row.Cells.Take(4).ToArray();
+        //     mapFields.Last().SetValue(row, (uint)6001);
+        // }
+    }
+
 }
