@@ -1,3 +1,14 @@
+# Project Notes
+
+Below this heading is the original readme and it all currently is the same. My updates to this are intented to include
+* ability to run this in linux (testing on Bazzite)
+  * updating dependencies to target just net8.0 and not net8.0-windows
+  * swapping from WinForms to Avalonia
+* allowing not grouping the weapons for more randomization
+* change the basic smithing stone to work just as sombers do, and not have the 3x, 2x, 1x tiering.
+* further updating dependencies to target net10, since net8 is going to be out of support in Nov 10, 2026
+* possibly other stuff!
+
 # How To Use
 The program should find your steam library and find the eldenring.exe path. If the progam does not: shift + right click your elden ring executable, select "Copy as path", Paste into the path text box, and remove the quotation marks on either side.
 
