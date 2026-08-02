@@ -108,7 +108,7 @@ public partial class Param : SoulsFile<Param>
     /// <summary>
     /// Identifies corresponding params and paramdefs.
     /// </summary>
-    public string ParamType { get; set; }
+    public string ParamType { get; set; } = string.Empty;
 
     /// <summary>
     /// Automatically determined based on spacing of row offsets; 0 if param had no rows.
@@ -133,8 +133,8 @@ public partial class Param : SoulsFile<Param>
         }
     }
 
-    public IReadOnlyList<Column> Cells { get; private set; }
-    public PARAMDEF AppliedParamdef { get; private set; }
+    public IReadOnlyList<Column> Cells { get; private set; } = [];
+    public PARAMDEF AppliedParamdef { get; private set; } = new();
 
     public Param() { }
 

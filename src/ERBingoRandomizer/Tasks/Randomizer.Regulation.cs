@@ -1,9 +1,4 @@
-﻿using Project.Params;
-using Project.Settings;
-using Project.Utility;
-using FSParam;
-using SoulsFormats;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
@@ -11,6 +6,11 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text.Json;
 using System.Threading.Tasks;
+using FSParam;
+using Project.Params;
+using Project.Settings;
+using Project.Utility;
+using SoulsFormats;
 using static FSParam.Param;
 
 namespace Project.Tasks;
@@ -33,9 +33,9 @@ public partial class Randomizer
     private Dictionary<int, string> _weaponNameDictionary;
     private Dictionary<int, EquipParamGoods> _goodsDictionary;
     private Dictionary<int, Magic> _magicDictionary;
-    private Dictionary<ushort, List<Param.Row>> _weaponTypeDictionary;
-    private Dictionary<byte, List<Param.Row>> _armorTypeDictionary;
-    private Dictionary<byte, List<Param.Row>> _magicTypeDictionary;
+    private Dictionary<ushort, List<Row>> _weaponTypeDictionary;
+    private Dictionary<byte, List<Row>> _armorTypeDictionary;
+    private Dictionary<byte, List<Row>> _magicTypeDictionary;
     public Task RandomizeRegulation()
     {
         _randomizerLog = new List<string>();
@@ -66,24 +66,24 @@ public partial class Randomizer
         logItem($"Seed: {_seed}");
         logItem("Level estimate (x) appears if you cannot wield the weapon, assumes you are benefiting from two-handing.");
 
-        List<Param.Row> staves = _weaponTypeDictionary[Const.StaffType];
-        List<Param.Row> seals = _weaponTypeDictionary[Const.SealType];
+        List<Row> staves = _weaponTypeDictionary[Const.StaffType];
+        List<Row> seals = _weaponTypeDictionary[Const.SealType];
 
-        List<Param.Row> bows = _weaponTypeDictionary[Const.BowType];
-        List<Param.Row> lightbows = _weaponTypeDictionary[Const.LightBowType];
-        List<Param.Row> greatbows = _weaponTypeDictionary[Const.GreatbowType];
-        List<Param.Row> ballistae = _weaponTypeDictionary[Const.BallistaType];
-        List<Param.Row> crossbows = _weaponTypeDictionary[Const.CrossbowType];
-        List<Param.Row> smallShields = _weaponTypeDictionary[Const.SmallShieldType];
-        List<Param.Row> mediumShields = _weaponTypeDictionary[Const.MediumShieldType];
-        List<Param.Row> greatShields = _weaponTypeDictionary[Const.GreatShieldType];
-        List<Param.Row> spears = _weaponTypeDictionary[Const.SpearType];
-        List<Param.Row> greatSpears = _weaponTypeDictionary[Const.GreatSpearType];
-        List<Param.Row> claws = _weaponTypeDictionary[Const.ClawType];
-        List<Param.Row> daggers = _weaponTypeDictionary[Const.DaggerType];
-        List<Param.Row> fists = _weaponTypeDictionary[Const.FistType];
-        List<Param.Row> colossalWeapons = _weaponTypeDictionary[Const.ColossalWeaponType];
-        List<Param.Row> colossalSwords = _weaponTypeDictionary[Const.ColossalSwordType];
+        List<Row> bows = _weaponTypeDictionary[Const.BowType];
+        List<Row> lightbows = _weaponTypeDictionary[Const.LightBowType];
+        List<Row> greatbows = _weaponTypeDictionary[Const.GreatbowType];
+        List<Row> ballistae = _weaponTypeDictionary[Const.BallistaType];
+        List<Row> crossbows = _weaponTypeDictionary[Const.CrossbowType];
+        List<Row> smallShields = _weaponTypeDictionary[Const.SmallShieldType];
+        List<Row> mediumShields = _weaponTypeDictionary[Const.MediumShieldType];
+        List<Row> greatShields = _weaponTypeDictionary[Const.GreatShieldType];
+        List<Row> spears = _weaponTypeDictionary[Const.SpearType];
+        List<Row> greatSpears = _weaponTypeDictionary[Const.GreatSpearType];
+        List<Row> claws = _weaponTypeDictionary[Const.ClawType];
+        List<Row> daggers = _weaponTypeDictionary[Const.DaggerType];
+        List<Row> fists = _weaponTypeDictionary[Const.FistType];
+        List<Row> colossalWeapons = _weaponTypeDictionary[Const.ColossalWeaponType];
+        List<Row> colossalSwords = _weaponTypeDictionary[Const.ColossalSwordType];
 
         IEnumerable<int> remembranceItems = _shopLineupParam.Rows.Where(r => r.ID is >= 101895 and <= 101948) // sword lance to Light of Miquella
             .Select(r => new ShopLineupParam(r).equipId);
@@ -108,18 +108,18 @@ public partial class Randomizer
                 && remembranceItems.All(i => i != id))
             .ToList();
 
-        List<Param.Row> greatswords = _weaponTypeDictionary[Const.GreatswordType];
-        List<Param.Row> curvedGreatswords = _weaponTypeDictionary[Const.CurvedGreatswordType];
-        List<Param.Row> katanas = _weaponTypeDictionary[Const.KatanaType];
-        List<Param.Row> twinblades = _weaponTypeDictionary[Const.TwinbladeType];
-        List<Param.Row> heavyThrusting = _weaponTypeDictionary[Const.HeavyThrustingType];
-        List<Param.Row> axes = _weaponTypeDictionary[Const.AxeType];
-        List<Param.Row> greataxes = _weaponTypeDictionary[Const.GreataxeType];
-        List<Param.Row> hammers = _weaponTypeDictionary[Const.HammerType];
-        List<Param.Row> greatHammers = _weaponTypeDictionary[Const.GreatHammerType];
-        List<Param.Row> halberds = _weaponTypeDictionary[Const.HalberdType];
-        List<Param.Row> reapers = _weaponTypeDictionary[Const.ReaperType];
-        List<Param.Row> greatKatanas = _weaponTypeDictionary[Const.GreatKatanaType];
+        List<Row> greatswords = _weaponTypeDictionary[Const.GreatswordType];
+        List<Row> curvedGreatswords = _weaponTypeDictionary[Const.CurvedGreatswordType];
+        List<Row> katanas = _weaponTypeDictionary[Const.KatanaType];
+        List<Row> twinblades = _weaponTypeDictionary[Const.TwinbladeType];
+        List<Row> heavyThrusting = _weaponTypeDictionary[Const.HeavyThrustingType];
+        List<Row> axes = _weaponTypeDictionary[Const.AxeType];
+        List<Row> greataxes = _weaponTypeDictionary[Const.GreataxeType];
+        List<Row> hammers = _weaponTypeDictionary[Const.HammerType];
+        List<Row> greatHammers = _weaponTypeDictionary[Const.GreatHammerType];
+        List<Row> halberds = _weaponTypeDictionary[Const.HalberdType];
+        List<Row> reapers = _weaponTypeDictionary[Const.ReaperType];
+        List<Row> greatKatanas = _weaponTypeDictionary[Const.GreatKatanaType];
 
         List<int> sideArms = _weaponDictionary.Keys.Select(washWeaponMetadata).Distinct()
             .Where(id => staves.All(s => s.ID != id) && seals.All(s => s.ID != id)
@@ -165,15 +165,15 @@ public partial class Randomizer
         OrderedDictionary guaranteedDictionary = new();
         // OrderedDictionary guaranteedArmor = new();
 
-        IEnumerable<Param.Row> itemLotParamMap = _itemLotParam_map.Rows.Where(id => !Unk.unkItemLotParamMapWeapons.Contains(id.ID));
-        IEnumerable<Param.Row> itemLotParamEnemy = _itemLotParam_enemy.Rows.Where(id => !Unk.unkItemLotParamEnemyWeapons.Contains(id.ID));
-        IEnumerable<Param.Row> rowList = itemLotParamEnemy.Concat(itemLotParamMap);
+        IEnumerable<Row> itemLotParamMap = _itemLotParam_map.Rows.Where(id => !Unk.unkItemLotParamMapWeapons.Contains(id.ID));
+        IEnumerable<Row> itemLotParamEnemy = _itemLotParam_enemy.Rows.Where(id => !Unk.unkItemLotParamEnemyWeapons.Contains(id.ID));
+        IEnumerable<Row> rowList = itemLotParamEnemy.Concat(itemLotParamMap);
 
-        foreach (Param.Row row in rowList)
+        foreach (Row row in rowList)
         {
-            Param.Column[] itemIds = row.Cells.Take(Const.ItemLots).ToArray();
-            Param.Column[] categories = row.Cells.Skip(Const.CategoriesStart).Take(Const.ItemLots).ToArray();
-            Param.Column[] chances = row.Cells.Skip(Const.ChanceStart).Take(Const.ItemLots).ToArray();
+            Column[] itemIds = row.Cells.Take(Const.ItemLots).ToArray();
+            Column[] categories = row.Cells.Skip(Const.CategoriesStart).Take(Const.ItemLots).ToArray();
+            Column[] chances = row.Cells.Skip(Const.ChanceStart).Take(Const.ItemLots).ToArray();
             int totalWeight = chances.Sum(a => (ushort)a.GetValue(row));
 
             for (int i = 0; i < Const.ItemLots; i++)
@@ -191,7 +191,7 @@ public partial class Randomizer
                 if (category == Const.ItemLotWeaponCategory)
                 {
                     if (!_weaponDictionary.TryGetValue(id, out EquipParamWeapon? wep)) { continue; }
-                    if ((wep.wepType is Const.StaffType or Const.SealType)) { continue; }
+                    if (wep.wepType is Const.StaffType or Const.SealType) { continue; }
 
                     ushort chance = (ushort)chances[i].GetValue(row);
                     if (chance == totalWeight)
@@ -230,10 +230,10 @@ public partial class Randomizer
         logReplacementDictionary(chanceReplacements);
         logItem("");
 
-        foreach (Param.Row row in rowList)
+        foreach (Row row in rowList)
         {
-            Param.Column[] itemIds = row.Cells.Take(Const.ItemLots).ToArray();
-            Param.Column[] categories = row.Cells.Skip(Const.CategoriesStart).Take(Const.ItemLots).ToArray();
+            Column[] itemIds = row.Cells.Take(Const.ItemLots).ToArray();
+            Column[] categories = row.Cells.Skip(Const.CategoriesStart).Take(Const.ItemLots).ToArray();
 
             for (int i = 0; i < Const.ItemLots; i++)
             {
@@ -407,10 +407,10 @@ public partial class Randomizer
             }
         }
 
-        foreach (Param.Row row in _itemLotParam_enemy.Rows.Concat(_itemLotParam_map.Rows))
+        foreach (Row row in _itemLotParam_enemy.Rows.Concat(_itemLotParam_map.Rows))
         {
-            Param.Column[] itemIds = row.Cells.Take(Const.ItemLots).ToArray();
-            Param.Column[] categories = row.Cells.Skip(Const.CategoriesStart).Take(Const.ItemLots).ToArray();
+            Column[] itemIds = row.Cells.Take(Const.ItemLots).ToArray();
+            Column[] categories = row.Cells.Skip(Const.CategoriesStart).Take(Const.ItemLots).ToArray();
             for (int i = 0; i < Const.ItemLots; i++)
             {
                 int category = (int)categories[i].GetValue(row);
@@ -467,7 +467,7 @@ public partial class Randomizer
             960300, 1500300,
         };
 
-        foreach (Param.Row row in _shopLineupParam.Rows)
+        foreach (Row row in _shopLineupParam.Rows)
         {
             if ((byte)row["equipType"]!.Value.Value == Const.ShopLineupArmorCategory)
             {
@@ -500,8 +500,8 @@ public partial class Randomizer
     }
     private void patchAtkParam()
     {
-        Param.Row swarmOfFlies1 = _atkParam_Pc[72100] ?? throw new InvalidOperationException("Entry 72100 not found in AtkParam_Pc");
-        Param.Row swarmOfFlies2 = _atkParam_Pc[72101] ?? throw new InvalidOperationException("Entry 72101 not found in AtkParam_Pc");
+        Row swarmOfFlies1 = _atkParam_Pc[72100] ?? throw new InvalidOperationException("Entry 72100 not found in AtkParam_Pc");
+        Row swarmOfFlies2 = _atkParam_Pc[72101] ?? throw new InvalidOperationException("Entry 72101 not found in AtkParam_Pc");
 
         AtkParam swarmAtkParam1 = new(swarmOfFlies1);
         AtkParam swarmAtkParam2 = new(swarmOfFlies2);
@@ -512,7 +512,7 @@ public partial class Randomizer
     private void patchSmithingStones()
     {
         // int adjustments = 0;
-        foreach (Param.Row row in _equipMtrlSetParam.Rows)
+        foreach (Row row in _equipMtrlSetParam.Rows)
         {
             int numberRequired = (sbyte)row["itemNum01"]!.Value.Value;
             int category = (byte)row["materialCate01"]!.Value.Value;

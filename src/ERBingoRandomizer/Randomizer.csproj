@@ -9,6 +9,7 @@
         <RuntimeIdentifier>win-x64</RuntimeIdentifier> 
         <Nullable>enable</Nullable>
         <UseWPF>true</UseWPF>
+        <EnableWindowsTargeting>true</EnableWindowsTargeting>
     </PropertyGroup>
 
     <ItemGroup>

@@ -478,7 +478,7 @@ namespace SoulsFormats
             ArmoredCore6 = 2,
         }
 
-            private static readonly Dictionary<RegulationKey, byte[]> RegulationKeyDictionary = new Dictionary<RegulationKey, byte[]>
+        private static readonly Dictionary<RegulationKey, byte[]> RegulationKeyDictionary = new Dictionary<RegulationKey, byte[]>
             {
                 { RegulationKey.DarkSouls3, SFEncoding.ASCII.GetBytes("ds3#jn/8_7(rsY9pg55GFN7VFL#+3n/)") },
                 { RegulationKey.EldenRing, ParseHexString(
