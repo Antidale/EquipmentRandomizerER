@@ -53,9 +53,9 @@ public partial class Randomizer
         _cancellationToken.ThrowIfCancellationRequested();
         randomizeShopLineupParamMagic();
         _cancellationToken.ThrowIfCancellationRequested();
-        randomizeShopArmorParam();
+        RandomizeShopArmorParam();
         _cancellationToken.ThrowIfCancellationRequested();
-        patchAtkParam();
+        PatchAtkParam();
         PatchSmithingStones();
         _cancellationToken.ThrowIfCancellationRequested();
         allocatedIDs = new HashSet<int>() { 2510000, };
@@ -339,8 +339,8 @@ public partial class Randomizer
 
             if (!(wep.wepType is Const.StaffType or Const.SealType))
             {
-                if (lot.mtrlId == -1) { replaceWeaponLineupParam(lot, merchantWeaponList); }
-                else { replaceRemembranceLineupParam(lot, RemembranceWeaponIDs); }  // remembrance list is small, better to have seperate unique allocation logic
+                if (lot.mtrlId == -1) { ReplaceWeaponLineupParam(lot, merchantWeaponList); }
+                else { ReplaceRemembranceLineupParam(lot, RemembranceWeaponIDs); }  // remembrance list is small, better to have seperate unique allocation logic
             }
         }
     }
@@ -439,7 +439,7 @@ public partial class Randomizer
             }
         }
     }
-    private void replaceWeaponLineupParam(ShopLineupParam lot, List<int> WeaponShopList)
+    private void ReplaceWeaponLineupParam(ShopLineupParam lot, List<int> WeaponShopList)
     {
         int newId = 0;
         do
@@ -452,7 +452,7 @@ public partial class Randomizer
         lot.equipId = newId;
         allocatedIDs.Add(newId);
     }
-    private void replaceRemembranceLineupParam(ShopLineupParam lot, IList<int> remembranceList)
+    private void ReplaceRemembranceLineupParam(ShopLineupParam lot, IList<int> remembranceList)
     {
         int index = _random.Next(remembranceList.Count);
         int newId = remembranceList[index];
@@ -460,7 +460,7 @@ public partial class Randomizer
         remembranceList.Remove(newId);
         lot.equipId = newId;
     }
-    private void randomizeShopArmorParam()
+    private void RandomizeShopArmorParam()
     {   // need the id's to identify the item lots
         List<int> baseHeadProtectors = new List<int>()
         {
@@ -513,7 +513,7 @@ public partial class Randomizer
             }
         }
     }
-    private void patchAtkParam()
+    private void PatchAtkParam()
     {
         Param.Row swarmOfFlies1 = _atkParam_Pc[72100] ?? throw new InvalidOperationException("Entry 72100 not found in AtkParam_Pc");
         Param.Row swarmOfFlies2 = _atkParam_Pc[72101] ?? throw new InvalidOperationException("Entry 72101 not found in AtkParam_Pc");
