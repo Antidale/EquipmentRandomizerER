@@ -60,6 +60,7 @@ public partial class Randomizer
         File.WriteAllText(Config.LastSeedPath, seedJson);
         return Task.CompletedTask;
     }
+
     private void randomizeStartingClassParams()
     {
         logItem("Starting Class Randomization");
@@ -159,6 +160,7 @@ public partial class Randomizer
             addDescriptionString(startingClass, Const.ChrInfoMapping[i]);
         }
     }
+
     private void randomizeWeaponLocations()
     {
         OrderedDictionary chanceDictionary = new();

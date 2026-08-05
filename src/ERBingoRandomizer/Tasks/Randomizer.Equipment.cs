@@ -1,9 +1,9 @@
-﻿using Project.Params;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Project.Settings;
 using FSParam;
+using Project.Params;
+using Project.Settings;
 
 namespace Project.Tasks;
 
@@ -118,7 +118,8 @@ public partial class Randomizer
     }
 
     private void assignUsableWeapon(CharaInitParam chr, ushort type)
-    {   // starting classes get two random weapons in slot1 left, right this fills in the next open slot with the desired type.
+    {
+        // starting classes get two random weapons in slot1 left, right this fills in the next open slot with the desired type.
         EquipParamWeapon? wep;
 
         if (_weaponDictionary.TryGetValue(chr.subWepLeft, out wep))
