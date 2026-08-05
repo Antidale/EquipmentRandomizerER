@@ -50,7 +50,7 @@ public partial class Randomizer
         randomizeShopArmorParam();
         _cancellationToken.ThrowIfCancellationRequested();
         patchAtkParam();
-        patchSmithingStones();
+        PatchSmithingStones();
         _cancellationToken.ThrowIfCancellationRequested();
         allocatedIDs = new HashSet<int>() { 2510000, };
         writeFiles();
@@ -509,24 +509,18 @@ public partial class Randomizer
         patchSpEffectAtkPowerCorrectRate(swarmAtkParam2);
     }
 
-    private void patchSmithingStones()
+    private void PatchSmithingStones()
     {
-        // int adjustments = 0;
         foreach (Row row in _equipMtrlSetParam.Rows)
         {
             int numberRequired = (sbyte)row["itemNum01"]!.Value.Value;
             int category = (byte)row["materialCate01"]!.Value.Value;
             int id = (int)row["materialId01"]!.Value.Value;
-            sbyte three = 3;
+            sbyte oneStone = 1;
 
             if (numberRequired > 1 && category == 4 && id >= 10100 && id < 10110)
             {
-                // ++adjustments;
-                // if (adjustments > 9) { row["itemNum01"]!.Value.SetValue(Const.ReducedSmithingCost); }
-                // else
-                // {
-                row["itemNum01"]!.Value.SetValue(three);
-                // }
+                row["itemNum01"]!.Value.SetValue(oneStone);
             }
         }
     }
