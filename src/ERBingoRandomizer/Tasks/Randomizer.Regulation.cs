@@ -53,6 +53,12 @@ public partial class Randomizer
         PatchSmithingStones();
         _cancellationToken.ThrowIfCancellationRequested();
         allocatedIDs = new HashSet<int>() { 2510000, };
+
+        //todo: port worldMap();
+
+        //todo: alter Kale's shop to have a Marik's rune in place of a note
+        UpdateKalesShop();
+
         writeFiles();
         writeLog();
         SeedInfo = new SeedInfo(_seed, Util.GetShaRegulation256Hash());
@@ -525,5 +531,13 @@ public partial class Randomizer
                 row["itemNum01"]!.Value.SetValue(oneStone);
             }
         }
+    }
+
+    private void UpdateKalesShop()
+    {
+        var physickNote = _shopLineupParam.Rows.FirstOrDefault(x => x.ID == 100500);
+        if (physickNote is null) { return; }
+
+        physickNote.Cells.ElementAt(0).SetValue(physickNote, 2002960);
     }
 }
