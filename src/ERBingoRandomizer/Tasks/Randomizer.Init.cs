@@ -1,10 +1,4 @@
-﻿using Project.FileHandler;
-using Project.Params;
-using Project.Settings;
-using Project.Utility;
-using FSParam;
-using SoulsFormats;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -12,6 +6,12 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using FSParam;
+using Project.FileHandler;
+using Project.Params;
+using Project.Settings;
+using Project.Utility;
+using SoulsFormats;
 
 #pragma warning disable CS8618
 
@@ -39,7 +39,10 @@ public partial class Randomizer
     private Param _equipParamGoods;
     private Param _equipParamProtector;
     private Param _goodsParam;
-    //static async method that behaves like a constructor    
+    //private Param _worldMapPieceParam;
+    //private Param _menuCommonParam;
+    //private Param _worldMapPointParam;
+    //static async method that behaves like a constructor
     public static async Task<Randomizer> BuildRandomizerAsync(string path, string seed, CancellationToken cancellationToken)
     {
         Randomizer rando = new(path, seed, cancellationToken);
@@ -124,6 +127,7 @@ public partial class Randomizer
         _weaponDictionary = new Dictionary<int, EquipParamWeapon>();
         _weaponTypeDictionary = new Dictionary<ushort, List<Param.Row>>();
         _weaponNameDictionary = new Dictionary<int, string>();
+        _worldMapPieceParamDictionary = new Dictionary<int, WorldMapPieceParam>();
 
         injectAdditionalWeaponNames(); // workaround for _weaponFmg
 
@@ -229,6 +233,17 @@ public partial class Randomizer
                 _magicTypeDictionary.Add(magic.ezStateBehaviorType, rows);
             }
         }
+
+        //foreach (Param.Row row in _worldMapPieceParam.Rows)
+        //{
+        //    if (!_worldMapPieceParamDictionary.TryGetValue(row.ID, out WorldMapPieceParam? map) || (row.ID < 14))
+        //    {
+        //        continue;
+        //    }
+
+        //    WorldMapPieceParam customMap = new(row);
+        //    _worldMapPieceParamDictionary.Add(row.ID, customMap);
+        //}
     }
     private static bool isSpellGoods(EquipParamGoods good)
     {
@@ -324,6 +339,33 @@ public partial class Randomizer
                     { throw new InvalidParamDefException(_equipMtrlSetParam.ParamType); }
                     break;
                 }
+            //case Const.WorldMapPieceParam:
+            //    {
+            //        _worldMapPieceParam = Param.Read(file.Bytes);
+            //        if (!_worldMapPieceParam.ApplyParamDefsCarefully(_paramDefs))
+            //        {
+            //            throw new InvalidParamDefException(_worldMapPieceParam.ParamType);
+            //        }
+            //        break;
+            //    }
+            //case Const.MenuCommonParam:
+            //    {
+            //        _menuCommonParam = Param.Read(file.Bytes);
+            //        if (!_menuCommonParam.ApplyParamDefsCarefully(_paramDefs))
+            //        {
+            //            throw new InvalidParamDefException(_menuCommonParam.ParamType);
+            //        }
+            //        break;
+            //    }
+            //case Const.WorldMapPointParam:
+            //    {
+            //        _worldMapPointParam = Param.Read(file.Bytes);
+            //        if (!_worldMapPointParam.ApplyParamDefsCarefully(_paramDefs))
+            //        {
+            //            throw new InvalidParamDefException(_worldMapPointParam.ParamType);
+            //        }
+            //        break;
+            //    }
         }
     }
     private void getFmgs(BinderFile file)

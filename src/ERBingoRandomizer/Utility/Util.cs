@@ -1,14 +1,11 @@
-﻿using Microsoft.Win32;
-using SoulsFormats;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Xml;
-using System.Windows.Forms; // TextRenderer
+using Microsoft.Win32;
 using Project.Settings;
+using SoulsFormats;
 
 namespace Project.Utility;
 

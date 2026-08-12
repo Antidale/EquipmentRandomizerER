@@ -28,10 +28,10 @@ public static class Config
     public const byte PoolSize = 88;
     // Paths
     public const string ResourcesPath = "./Resources";
-    public static readonly string CachePath = $"{Const.ExeDir}\\Cache";
+    public static readonly string CachePath = $"{Const.ExeDir}/Cache";
     public static readonly string SpoilerPath = $"{CachePath}/Spoilers";
     public static readonly string LastSeedPath = $"{CachePath}/LastSeed.json";
-    public static readonly string PackagesPath = $"{Const.ExeDir}\\Cache\\Packaged";
+    public static readonly string PackagesPath = $"{Const.ExeDir}/Cache/Packaged";
     // Files
     public const bool CacheBHDs = false;
 }
