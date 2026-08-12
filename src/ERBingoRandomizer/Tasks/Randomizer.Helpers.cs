@@ -249,9 +249,9 @@ public partial class Randomizer
         setBndFile(_regulationBnd, Const.EquipParamWeaponName, _equipParamWeapon.Write());
         setBndFile(_regulationBnd, Const.AtkParamPcName, _atkParam_Pc.Write());
         setBndFile(_regulationBnd, Const.EquipMtrlSetParam, _equipMtrlSetParam.Write());
-        setBndFile(_regulationBnd, Const.WorldMapPieceParam, _worldMapPieceParam.Write());
-        setBndFile(_regulationBnd, Const.MenuCommonParam, _menuCommonParam.Write());
-        setBndFile(_regulationBnd, Const.WorldMapPointParam, _worldMapPointParam.Write());
+        //setBndFile(_regulationBnd, Const.WorldMapPieceParam, _worldMapPieceParam.Write());
+        //setBndFile(_regulationBnd, Const.MenuCommonParam, _menuCommonParam.Write());
+        //setBndFile(_regulationBnd, Const.WorldMapPointParam, _worldMapPointParam.Write());
         SFUtil.EncryptERRegulation($"{Const.BingoPath}/{Const.RegulationName}", _regulationBnd);
         // create menu message for starting classes
         Directory.CreateDirectory(Path.GetDirectoryName($"{Const.BingoPath}/{Const.MenuMsgBNDPath}") ?? throw new InvalidOperationException());
