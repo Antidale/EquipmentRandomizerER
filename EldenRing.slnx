@@ -2,5 +2,6 @@
   <Project Path="dependencies/FSParam/FSParam.csproj" />
   <Project Path="dependencies/SoulsFormats/SoulsFormats/SoulsFormats.csproj" />
   <Project Path="dependencies/StudioUtils/StudioUtils.csproj" />
+  <Project Path="EldenEquipmentizer/EldenEquipmentizer.csproj" />
   <Project Path="src/ERBingoRandomizer/Randomizer.csproj" />
 </Solution>
